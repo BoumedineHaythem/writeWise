@@ -19,13 +19,13 @@
 
 .surface {
   position: relative;
-  min-height: 18rem;
-  padding: 1rem 1.1rem 2rem;
+  min-height: var(--editor-min-height, 18rem);
+  padding: 1.5rem 1.6rem 3rem;
   background: var(--color-surface, #ffffff);
   border: 1.5px solid var(--color-border, #d4d0c8);
   border-radius: var(--radius-md, 12px);
   cursor: text;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, min-height 0.4s ease;
 }
 
 .surface:focus-within {
@@ -90,7 +90,7 @@
 .paragraph,
 .bullet,
 .numbered {
-  font-size: 1rem;
+  font-size: var(--editor-font-size, 1rem);
 }
 
 .h1 {

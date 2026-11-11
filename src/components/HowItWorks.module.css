@@ -1,0 +1,560 @@
+/* "How Writewise works": stepper + interactive preview.
+   Uses your existing design tokens. */
+
+.section {
+  position: relative;
+  z-index: 1; /* above the hero's 3D scene */
+  padding: var(--space-12) 0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans', Arial, sans-serif;
+  color: var(--color-text);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-6);
+  align-items: center;
+}
+
+.text {
+  grid-column: 1 / span 5;
+}
+
+.title {
+  margin: 0 0 var(--space-2);
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.hint {
+  margin: 0 0 var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Steps ── */
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stepItem {
+  position: relative;
+}
+
+/* line connecting one number to the next; fills as you move forward */
+.conn {
+  position: absolute;
+  top: calc(var(--space-3) + 2.3rem);
+  bottom: calc(var(--space-3) * -1);
+  left: calc(1.15rem - 1px);
+  width: 2px;
+  background: var(--color-border);
+}
+
+.connFill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.5s ease;
+}
+
+.connDone .connFill {
+  transform: scaleY(1);
+}
+
+.stepBtn {
+  display: grid;
+  grid-template-columns: 2.3rem minmax(0, 1fr);
+  column-gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-3) 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.stepBtn:focus-visible,
+.panel button:focus-visible,
+.draft:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.stepNum {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-row: 1 / span 2;
+  align-self: start;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.stepBtn:hover .stepNum {
+  border-color: var(--color-accent);
+  transform: scale(1.08);
+}
+
+.stepDone .stepNum {
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark, var(--color-accent));
+}
+
+.stepOn .stepNum {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.stepTitle {
+  align-self: center;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.stepBtn:hover .stepTitle,
+.stepOn .stepTitle {
+  color: var(--color-text);
+}
+
+/* description opens under the active step */
+.stepBody {
+  grid-column: 2;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.4s ease, opacity 0.3s ease;
+}
+
+.stepOn .stepBody {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.stepBodyInner {
+  display: block;
+  overflow: hidden;
+  padding-top: var(--space-1);
+  line-height: 1.6;
+}
+
+/* ── Preview panel ── */
+.panel {
+  display: flex;
+  flex-direction: column;
+  grid-column: 7 / span 6;
+  min-height: 29rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-text);
+}
+
+.panelBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+}
+
+.panelCount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.panelNav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.navBtn {
+  padding: 0.3rem 0.8rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.navBtn:hover:not(:disabled) {
+  border-color: var(--color-text);
+}
+
+.navBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 23rem;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-8) var(--space-8);
+  visibility: hidden;
+  opacity: 0;
+}
+
+.slide[data-active='true'] {
+  visibility: visible;
+  opacity: 1;
+}
+
+.label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.prompt {
+  margin: 0;
+  font-size: clamp(1.4rem, 1rem + 1.4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+}
+
+.count {
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+/* buttons */
+.primary,
+.ghost,
+.fix {
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.primary {
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  color: #fff;
+}
+
+.primary:hover {
+  background: var(--color-accent-dark, var(--color-accent));
+  transform: translateY(-1px);
+}
+
+.ghost,
+.fix {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.ghost:hover,
+.fix:hover {
+  border-color: var(--color-accent);
+}
+
+/* 1. prompt chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.chip {
+  padding: 0.4rem 0.9rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--color-accent);
+}
+
+.chipOn {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* 2. mini editor */
+.draft {
+  flex: 1;
+  width: 100%;
+  min-height: 7rem;
+  padding: 0.8rem 0.9rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  resize: none;
+}
+
+.draft:focus {
+  border-color: var(--color-accent);
+}
+
+.typoRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.4rem;
+  font-size: var(--font-size-sm);
+}
+
+.typoWord {
+  text-decoration: underline wavy var(--color-error, #d1495b);
+  text-underline-offset: 3px;
+}
+
+.fix {
+  padding: 0.35rem 0.8rem;
+  border-color: var(--color-accent);
+}
+
+.ok {
+  color: var(--color-text-muted);
+}
+
+/* 3. feedback accordion */
+.fbList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fbItem {
+  border-top: 1px solid var(--color-border);
+}
+
+.fbBtn {
+  display: grid;
+  grid-template-columns: 0.6rem minmax(0, 1fr) 1rem;
+  column-gap: var(--space-3);
+  align-items: baseline;
+  width: 100%;
+  padding: var(--space-3) 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.fbDot {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: var(--color-accent);
+}
+
+.fbTitle {
+  display: block;
+}
+
+.fbSummary {
+  display: block;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.fbChev {
+  position: relative;
+  width: 0.8rem;
+  height: 0.8rem;
+  align-self: center;
+}
+
+.fbChev::before,
+.fbChev::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-text);
+  transition: transform 0.3s ease;
+}
+
+.fbChev::after {
+  transform: rotate(90deg);
+}
+
+.fbChevOpen::after {
+  transform: rotate(0deg);
+}
+
+.fbDetail {
+  display: grid;
+  grid-template-rows: 0fr;
+  padding-left: calc(0.6rem + var(--space-3));
+  visibility: hidden;
+  transition: grid-template-rows 0.35s ease, visibility 0s linear 0.35s;
+}
+
+.fbDetailOpen {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows 0.35s ease, visibility 0s;
+}
+
+.fbDetailInner {
+  margin: 0;
+  overflow: hidden;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+/* 4. progress */
+.goal {
+  height: 6px;
+  background: var(--color-border);
+}
+
+.goalFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-accent);
+  transform: scaleX(0.667);
+  transform-origin: left center;
+}
+
+.readout {
+  min-height: 1.4rem;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.chart {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  gap: var(--space-3);
+  min-height: 6rem;
+  border-bottom: 1px solid var(--color-text);
+}
+
+.col {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+}
+
+.bar {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: var(--color-accent);
+  border: 0;
+  border-radius: 0;
+  opacity: 0.7;
+  transform-origin: bottom center;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.bar:hover,
+.barOn {
+  background: var(--color-accent-dark, var(--color-accent));
+  opacity: 1;
+}
+
+.days {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.days span {
+  flex: 1;
+  text-align: center;
+}
+
+/* ── Phones and tablets: stack, no pinning ── */
+@media (max-width: 860px) {
+  .grid {
+    display: block;
+  }
+
+  .panel {
+    margin-top: var(--space-8);
+  }
+
+  .slide {
+    padding: var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connFill,
+  .stepNum,
+  .stepTitle,
+  .stepBody,
+  .fbChev::before,
+  .fbChev::after,
+  .fbDetail,
+  .fbDetailOpen,
+  .bar,
+  .primary,
+  .chip {
+    transition: none;
+  }
+}

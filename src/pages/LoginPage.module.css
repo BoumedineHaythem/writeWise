@@ -1,0 +1,478 @@
+/* Log in: dark animated stage + clean form.
+   Same Swiss / modern system as the other pages. Uses your design tokens.
+   (Sign up keeps using AuthPage.module.css, which is unchanged.) */
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  min-height: calc(100vh - 4.5rem);
+  overflow-x: clip;
+  font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans', Arial, sans-serif;
+  color: var(--color-text);
+}
+
+/* masked words for the headline reveal */
+.wordMask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.06em 0 0.22em;
+  margin: -0.06em 0 -0.22em;
+}
+
+.word {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ── Dark stage ── */
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-10);
+  overflow: hidden;
+  background: var(--color-text);
+  color: #fff;
+}
+
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob,
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+}
+
+.blobA {
+  top: -10rem;
+  right: -8rem;
+  width: 30rem;
+  height: 30rem;
+  background: var(--color-accent);
+  opacity: 0.35;
+  animation: floatA 16s ease-in-out infinite;
+}
+
+.blobB {
+  bottom: -12rem;
+  left: -10rem;
+  width: 28rem;
+  height: 28rem;
+  background: #e9c46a;
+  opacity: 0.18;
+  animation: floatB 20s ease-in-out infinite;
+}
+
+.glow {
+  top: 0;
+  left: 0;
+  width: 26rem;
+  height: 26rem;
+  margin: -13rem 0 0 -13rem;
+  background: var(--color-accent);
+  opacity: 0;
+  will-change: transform;
+}
+
+@keyframes floatA {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-4rem, 3rem) scale(1.12); }
+}
+
+@keyframes floatB {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5rem, -3rem) scale(1.1); }
+}
+
+.stageTitle,
+.sceneWrap,
+.tips {
+  position: relative;
+  z-index: 1;
+}
+
+.stageTitle {
+  margin: 0;
+  font-size: clamp(2.25rem, 1.4rem + 3vw, 4rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.sceneWrap {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.tips {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 4.5rem;
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.tipText {
+  max-width: 24rem;
+  margin: 0;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.tipDots {
+  display: flex;
+  gap: 0.4rem;
+  padding-bottom: 0.35rem;
+}
+
+.tipDot {
+  width: 1.25rem;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: background 0.3s ease, width 0.3s ease;
+}
+
+.tipDotOn {
+  width: 2.25rem;
+  background: var(--color-accent);
+}
+
+/* ── Form side ── */
+.panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10) var(--space-8);
+  background: var(--color-bg);
+}
+
+.panelInner {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.sub {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
+}
+
+.note {
+  margin: var(--space-4) 0 var(--space-8);
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ── Fields ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  transition: color 0.2s ease;
+}
+
+.field:focus-within .label {
+  color: var(--color-accent-dark, var(--color-accent));
+}
+
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+/* accent line that draws itself on focus */
+.line {
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.control:focus-within .line {
+  transform: scaleX(1);
+}
+
+.fieldError .control {
+  border-bottom-color: var(--color-error, #c0392b);
+}
+
+.fieldError .line {
+  background: var(--color-error, #c0392b);
+  transform: scaleX(1);
+}
+
+.errorWrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.errorOpen {
+  grid-template-rows: 1fr;
+}
+
+.errorInner {
+  overflow: hidden;
+}
+
+.errorText {
+  margin: 0;
+  padding-top: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-error, #c0392b);
+  animation: errorIn 0.35s ease both;
+}
+
+@keyframes errorIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.toggle {
+  padding: 0.2rem 0 0.2rem 0.75rem;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.toggle:hover {
+  color: var(--color-text);
+}
+
+.toggle:focus-visible,
+.linkBtn:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.toggleText {
+  display: inline-block;
+  animation: pop 0.25s ease both;
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(6px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+.submitWrap {
+  display: block;
+  margin-top: var(--space-2);
+  will-change: transform;
+}
+
+/* ── Switch link ── */
+.switchLink {
+  margin: var(--space-6) 0 0;
+  color: var(--color-text-muted);
+}
+
+.linkBtn {
+  padding: 0 0 2px;
+  background: linear-gradient(var(--color-accent), var(--color-accent)) 0 100% / 100% 2px no-repeat;
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-size 0.3s ease, color 0.2s ease;
+}
+
+.linkBtn:hover {
+  background-size: 100% 100%;
+  color: #fff;
+}
+
+/* ── Success ── */
+.success {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) 0;
+  text-align: center;
+}
+
+.check {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.checkCircle,
+.checkPath {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+
+.checkCircle {
+  stroke-width: 3;
+}
+
+.checkPath {
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.prototypeNoteCenter {
+  max-width: 22rem;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.successTitle {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.successSub {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.loadBar {
+  width: 14rem;
+  height: 4px;
+  margin-top: var(--space-3);
+  overflow: hidden;
+  background: var(--color-border);
+}
+
+.loadFill {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  transform-origin: left center;
+}
+
+/* confetti starts from the check mark */
+.burst {
+  position: absolute;
+  top: calc(var(--space-8) + 2.75rem);
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: -0.25rem 0 0 -0.25rem;
+  background: var(--color-accent);
+  opacity: 0;
+}
+
+.particle:nth-child(3n) {
+  background: #e9c46a;
+}
+
+.particle:nth-child(4n) {
+  background: var(--color-text);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .stage {
+    display: none;
+  }
+
+  .panel {
+    padding: var(--space-8) var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blobA,
+  .blobB,
+  .errorText,
+  .toggleText {
+    animation: none;
+  }
+
+  .line,
+  .errorWrap,
+  .tipDot,
+  .linkBtn,
+  .label {
+    transition: none;
+  }
+}

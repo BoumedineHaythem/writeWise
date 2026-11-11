@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import HeroScene from '../components/HeroScene';
 import Tilt from '../components/Tilt';
+import HowItWorks from '../components/HowItWorks';
 import { mockBenefits } from '../data/mockData';
 import styles from './LandingPage.module.css';
 
@@ -17,18 +18,7 @@ gsap.registerPlugin(ScrollTrigger);
 const IGNORE_REDUCED_MOTION = false;
 const MOTION_OK = IGNORE_REDUCED_MOTION ? '(min-width: 0px)' : '(prefers-reduced-motion: no-preference)';
 
-const STEPS = [
-  { n: '1', title: 'Choose a prompt', body: 'Pick from a range of thoughtful writing prompts or start with a topic that matters to you.' },
-  { n: '2', title: 'Write freely', body: 'Use the distraction-free workspace to get your thoughts down. The word count updates as you go.' },
-  { n: '3', title: 'Review feedback', body: 'See observations on your grammar, vocabulary, and style, with friendly suggestions for next time.' },
-  { n: '4', title: 'Track your progress', body: 'Your practice history and focus-area growth are always there when you want to check in.' },
-];
-
 const TICKER_WORDS = ['Write', 'Review', 'Practise', 'Repeat'];
-const WEEK = [
-  { d: 'M', h: 35 }, { d: 'T', h: 55 }, { d: 'W', h: 42 }, { d: 'T', h: 70 },
-  { d: 'F', h: 50 }, { d: 'S', h: 85 }, { d: 'S', h: 62 },
-];
 
 /**
  * Script for the "writer" typo effect in the headline.
@@ -245,70 +235,6 @@ export default function LandingPage({ onNavigate }) {
       return () => cleanups.forEach((fn) => fn());
     }, root);
 
-    /* ═════════ Desktop: "How it works" is pinned and plays like a story ═════════ */
-    mm.add(`${MOTION_OK} and (min-width: 861px)`, () => {
-      const how = one('[data-anim="how"]');
-      const slides = list('[data-anim="slide"]');
-      const lis = list('[data-anim="step"]');
-      const rules = list('[data-anim="step-rule"]');
-      const bars = list('[data-anim="bar"]');
-      if (!how || slides.length < 2) return undefined;
-
-      gsap.set(slides.slice(1), { opacity: 0, y: 32 });
-      gsap.set(lis.slice(1), { opacity: 0.35 });
-      gsap.set(rules.slice(1), { scaleX: 0 });
-      gsap.set(rules[0], { scaleX: 1 });
-      gsap.set(bars, { scaleY: 0 });
-
-      const tl = gsap.timeline({
-        defaults: { ease: 'power2.inOut' },
-        scrollTrigger: {
-          trigger: how,
-          start: 'top 72px',
-          end: () => `+=${Math.round(window.innerHeight * 2.4)}`,
-          pin: true,
-          scrub: 0.6,
-          snap: { snapTo: 1 / (slides.length - 1), duration: { min: 0.2, max: 0.6 }, ease: 'power1.inOut' },
-          invalidateOnRefresh: true,
-        },
-      });
-
-      slides.slice(1).forEach((slide, idx) => {
-        const k = idx + 1; // incoming step
-        tl.to(slides[k - 1], { opacity: 0, y: -28, duration: 0.4 }, idx)
-          .fromTo(slide, { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.5 }, idx + 0.3)
-          .to(lis[k - 1], { opacity: 0.35, duration: 0.4 }, idx)
-          .to(rules[k - 1], { scaleX: 0, duration: 0.4 }, idx)
-          .to(lis[k], { opacity: 1, duration: 0.4 }, idx + 0.3)
-          .to(rules[k], { scaleX: 1, duration: 0.4 }, idx + 0.3);
-      });
-      // the weekly chart grows as the last slide arrives
-      tl.to(bars, { scaleY: 1, duration: 0.3, stagger: 0.04, ease: 'power3.out' }, slides.length - 2 + 0.45);
-      tl.to({}, { duration: 0 }, slides.length - 1); // timeline is exactly (steps - 1) long
-      return undefined;
-    }, root);
-
-    /* ═════════ Mobile: steps simply slide in and draw a line ═════════ */
-    mm.add(`${MOTION_OK} and (max-width: 860px)`, () => {
-      list('[data-anim="step"]').forEach((li) => {
-        gsap.from(li, {
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: li, start: 'top 88%', once: true },
-        });
-        const rule = li.querySelector('[data-anim="step-rule"]');
-        if (rule) {
-          gsap.fromTo(
-            rule,
-            { scaleX: 0 },
-            { scaleX: 1, ease: 'none', scrollTrigger: { trigger: li, start: 'top 75%', end: 'top 35%', scrub: true } }
-          );
-        }
-      });
-    }, root);
-
     // Fonts change text size, so re-measure scroll positions once they load.
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
@@ -417,89 +343,8 @@ export default function LandingPage({ onNavigate }) {
         </div>
       </section>
 
-      {/* ── How it works (pinned on desktop) ── */}
-      <section className={styles.howItWorks} aria-labelledby="how-heading" data-anim="how">
-        <div className="container">
-          <div className={styles.howGrid}>
-            <div className={styles.howText}>
-              <h2 id="how-heading" className={[styles.sectionTitle, styles.howTitle].join(' ')} data-anim="title">
-                How Writewise works
-              </h2>
-              <ol className={styles.steps}>
-                {STEPS.map((step) => (
-                  <li key={step.n} className={styles.step} data-anim="step">
-                    <span className={styles.stepNum} aria-hidden="true">{step.n}</span>
-                    <h3 className={styles.stepTitle}>{step.title}</h3>
-                    <p className={styles.stepBody}>{step.body}</p>
-                    <span className={styles.stepRule} data-anim="step-rule" aria-hidden="true" />
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            {/* Live preview that changes with each step (decorative) */}
-            <div className={styles.panel} aria-hidden="true">
-              <div className={styles.slide} data-anim="slide">
-                <p className={styles.slideLabel}>Today’s prompt</p>
-                <p className={styles.slidePrompt}>Describe a place that makes you feel peaceful.</p>
-                <ul className={styles.chips}>
-                  <li>A quiet place</li>
-                  <li>A childhood memory</li>
-                  <li>Your morning</li>
-                </ul>
-                <span className={styles.slideButton}>Try a different prompt</span>
-              </div>
-
-              <div className={styles.slide} data-anim="slide">
-                <p className={styles.slideLabel}>Your writing</p>
-                <p className={styles.slideText}>
-                  The lake is quiet in the morning. I want to go back, because the air feels clean and slow
-                  <span className={styles.caretInline} />
-                </p>
-                <div className={styles.slideFoot}>
-                  <span>34 words</span>
-                  <span className={styles.slideButton}>Review my writing</span>
-                </div>
-              </div>
-
-              <div className={styles.slide} data-anim="slide">
-                <p className={styles.slideLabel}>Your feedback</p>
-                <ul className={styles.feedbackList}>
-                  <li className={styles.feedbackItem}>
-                    <span className={styles.feedbackDot} />
-                    <span><strong>Grammar</strong> Clear, correct sentences. Nice work.</span>
-                  </li>
-                  <li className={styles.feedbackItem}>
-                    <span className={styles.feedbackDot} />
-                    <span><strong>Vocabulary</strong> Try “tranquil” instead of “quiet”.</span>
-                  </li>
-                  <li className={styles.feedbackItem}>
-                    <span className={styles.feedbackDot} />
-                    <span><strong>Style</strong> Add one detail the reader can hear.</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className={styles.slide} data-anim="slide">
-                <p className={styles.slideLabel}>This week</p>
-                <p className={styles.slidePrompt}>2 of 3 sessions done</p>
-                <div className={styles.chart}>
-                  {WEEK.map((day, i) => (
-                    <div key={i} className={styles.chartCol}>
-                      <span className={styles.chartBar} data-anim="bar" style={{ height: `${day.h}%` }} />
-                    </div>
-                  ))}
-                </div>
-                <div className={styles.chartDays}>
-                  {WEEK.map((day, i) => (
-                    <span key={i}>{day.d}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── How it works (interactive) ── */}
+      <HowItWorks ignoreReducedMotion={IGNORE_REDUCED_MOTION} />
 
       {/* ── CTA ── */}
       <section className={styles.cta} aria-labelledby="cta-heading" data-anim="cta">

@@ -1,5 +1,11 @@
+/* Writing workspace: same Swiss / minimal system as the landing page and dashboard.
+   Uses your existing design tokens. */
+
 .page {
-  padding: var(--space-10) 0 var(--space-16);
+  padding: var(--space-8) 0 var(--space-16);
+  overflow-x: clip;
+  font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans', Arial, sans-serif;
+  color: var(--color-text);
 }
 
 .inner {
@@ -8,122 +14,191 @@
   gap: var(--space-8);
 }
 
+/* masked words for the headline reveal */
+.wordMask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.06em 0 0.22em;
+  margin: -0.06em 0 -0.22em;
+}
+
+.word {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ── Header ── */
 .pageHeader {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: var(--space-4);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-text);
 }
 
 .pageTitle {
-  font-size: var(--font-size-3xl);
-  margin-bottom: var(--space-2);
+  margin: 0;
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 .pageSub {
+  max-width: 36rem;
+  margin: var(--space-3) 0 0;
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
   color: var(--color-text-muted);
 }
 
 .prototypeNote {
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3) var(--space-4);
-  margin-top: var(--space-3);
+  max-width: 60ch;
+  margin: var(--space-4) 0 0;
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--color-border);
   font-size: var(--font-size-sm);
   line-height: 1.5;
-  max-width: 72ch;
+  color: var(--color-text-muted);
 }
 
-/* Layout */
+/* ── Layout: the writing space gets the whole width until feedback appears ── */
 .layout {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8);
   align-items: start;
 }
 
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
+.layoutSplit {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
 }
 
 .editorCol {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  min-width: 0;
 }
 
-/* Prompt card */
+/* ── Prompt ── */
 .promptCard {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-6);
 }
 
 .promptLabel {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-accent-dark);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-accent-dark, var(--color-accent));
 }
 
 .promptText {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  line-height: 1.6;
+  margin: 0;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
   color: var(--color-text);
 }
 
 .changePrompt {
+  align-self: flex-start;
+  margin-top: var(--space-2);
+  padding: 0;
   background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-accent);
+  border: 0;
+  font: inherit;
   font-size: var(--font-size-sm);
   font-weight: 600;
-  padding: 0;
-  text-align: left;
+  color: var(--color-text);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  cursor: pointer;
 }
 
 .changePrompt:hover {
-  color: var(--color-accent-dark);
+  color: var(--color-accent-dark, var(--color-accent));
 }
 
-/* Editor form */
+.changePrompt:focus-visible,
+.focusBtn:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+/* ── Editor ── */
 .editorForm {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
+.editorTools {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.focusBtn {
+  padding: 0.35rem 0.9rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.focusBtn:hover {
+  border-color: var(--color-text);
+}
+
+.focusBtn[aria-pressed='true'] {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+}
+
 .editorFooter {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-4);
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.countBlock {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 12rem;
+  max-width: 24rem;
 }
 
 .wordCount {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text-muted);
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-1);
   min-width: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
 }
 
 .wordCountOk {
-  color: var(--color-success);
+  color: var(--color-success, var(--color-accent-dark));
 }
 
 .wordCountHint {
@@ -131,7 +206,27 @@
   color: var(--color-text-muted);
 }
 
-/* Submitted view */
+.meter {
+  height: 4px;
+  background: var(--color-border);
+}
+
+.meterFill {
+  display: block;
+  height: 100%;
+  background: var(--color-text-muted);
+  transition: width 0.35s ease, background 0.3s ease;
+}
+
+.meterDone {
+  background: var(--color-accent);
+}
+
+.reviewWrap {
+  display: inline-block;
+}
+
+/* ── Submitted view ── */
 .submittedText {
   display: flex;
   flex-direction: column;
@@ -139,69 +234,74 @@
 }
 
 .submittedLabel {
+  margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
 
 .textDisplay {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-5);
-  font-size: var(--font-size-base);
+  min-height: 12rem;
+  padding: var(--space-6) var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-text);
+  font-size: 1.1rem;
   line-height: 1.8;
   color: var(--color-text);
-  white-space: pre-wrap;
   word-break: break-word;
-  min-height: 200px;
 }
 
-/* Feedback panel */
+/* ── Feedback ── */
 .feedbackCol {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  outline: none; /* receives programmatic focus for scroll — no visible ring needed */
+  outline: none; /* receives programmatic focus for scrolling, no ring needed */
 }
 
 .disclaimerBanner {
-  background-color: #fff8e6;
-  border: 1px solid #f0c040;
-  border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
+  background: #fff8e6;
+  border-left: 4px solid #f0c040;
   font-size: var(--font-size-sm);
-  color: #7a5900;
   line-height: 1.5;
+  color: #7a5900;
 }
 
 .feedbackCard {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  padding: var(--space-6);
 }
 
 .feedbackTitle {
-  font-size: var(--font-size-xl);
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .feedbackOverall {
-  color: var(--color-text);
+  margin: 0;
   line-height: 1.6;
+  color: var(--color-text);
 }
 
 .observationList {
-  list-style: none;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .observation {
-  border-left: 3px solid var(--color-accent);
-  padding-left: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
 .obsHeader {
@@ -209,35 +309,80 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--font-size-sm);
-  font-weight: 600;
+}
+
+.obsDot {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: var(--color-accent);
 }
 
 .obsText {
+  margin: 0;
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
   line-height: 1.6;
+  color: var(--color-text-muted);
 }
 
 .nextStep {
-  background-color: var(--color-accent-light);
-  border-radius: var(--radius-sm);
-  padding: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-accent-light);
+  border-left: 4px solid var(--color-accent);
   font-size: var(--font-size-sm);
-  color: var(--color-text);
   line-height: 1.6;
+  color: var(--color-text);
+}
+
+.nextStep p {
+  margin: 0;
 }
 
 .nextStepLabel {
   font-weight: 700;
-  font-size: var(--font-size-sm);
-  color: var(--color-accent-dark);
+  color: var(--color-accent-dark, var(--color-accent));
 }
 
 .feedbackActions {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+/* ── Focus mode: the header quiets down, the page is all writing space ── */
+.pageFocus .pageSub,
+.pageFocus .prototypeNote {
+  display: none;
+}
+
+.pageFocus .pageHeader {
+  padding-bottom: var(--space-3);
+}
+
+.pageFocus .promptCard {
+  padding: var(--space-3) var(--space-5);
+}
+
+.pageFocus .promptText {
+  font-size: 1.05rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .layoutSplit {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .textDisplay {
+    padding: var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meterFill,
+  .focusBtn {
+    transition: none;
+  }
 }

@@ -1,253 +1,367 @@
-/* Swiss / minimal landing page
-   - one 12-column grid, content aligned flush left
-   - hierarchy comes from scale and weight, not boxes or shadows
-   - hairline rules for structure, one accent colour
-   Uses your existing design tokens. */
+/* Dashboard: same Swiss / minimal system as the landing page.
+   12-column grid, hairline rules, one accent colour, uses your design tokens. */
 
 .page {
-  overflow-x: hidden;
+  padding: var(--space-8) 0 var(--space-16);
+  overflow-x: clip;
   font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans', Arial, sans-serif;
   color: var(--color-text);
 }
 
-/* ── Shared grid ── */
-.heroGrid,
-.sectionGrid,
-.ctaGrid {
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+/* masked words for the headline reveal */
+.wordMask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.06em 0 0.22em;
+  margin: -0.06em 0 -0.22em;
+}
+
+.word {
+  display: inline-block;
+  will-change: transform;
+}
+
+.magnet {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ── Welcome ── */
+.welcome {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--space-6);
-}
-
-/* ── Hero ── */
-.hero {
-  padding: var(--space-8) 0 var(--space-20);
-  background: var(--color-bg);
-}
-
-.meta {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin: 0 0 var(--space-16);
-  padding-bottom: var(--space-3);
+  align-items: end;
+  padding-bottom: var(--space-8);
   border-bottom: 1px solid var(--color-text);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
 }
 
-.heroText {
+.welcomeText {
   grid-column: 1 / span 8;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-6);
 }
 
 .title {
   margin: 0;
-  font-size: clamp(2.5rem, 1.6rem + 4vw, 4.75rem);
+  font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4rem);
   font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
   color: var(--color-text);
 }
 
-.subtitle {
-  max-width: 34rem;
+.welcomeSub {
+  max-width: 32rem;
   margin: var(--space-4) 0 0;
   font-size: var(--font-size-lg);
   line-height: 1.6;
   color: var(--color-text-muted);
 }
 
-.heroCta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
+.welcomeAction {
+  grid-column: 9 / span 4;
+  justify-self: end;
 }
 
-.heroNote {
+/* ── Weekly goal ── */
+.goalCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-8);
+  align-items: center;
+  padding: var(--space-8);
+}
+
+.cardTitle {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.goalBig {
   margin: 0;
-  font-size: var(--font-size-sm);
+  font-size: clamp(3rem, 2rem + 4vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.goalOf {
+  font-size: 0.45em;
+  font-weight: 500;
+  letter-spacing: 0;
   color: var(--color-text-muted);
 }
 
-/* 3D scene column */
-.heroPreview {
-  grid-column: 9 / span 4;
-  align-self: center;
+.goalCaption {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-muted);
 }
 
-/* ── Section scaffolding ── */
-.benefits,
-.howItWorks,
-.cta {
-  padding: var(--space-16) 0;
-  border-top: 1px solid var(--color-border);
+.goalComplete {
+  margin: var(--space-4) 0 0;
+  font-weight: 600;
+  color: var(--color-accent-dark, var(--color-accent));
+}
+
+.ringWrap {
+  position: relative;
+  width: 9.5rem;
+  height: 9.5rem;
+}
+
+.ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ringTrack,
+.ringFill {
+  fill: none;
+  stroke-width: 8;
+}
+
+.ringTrack {
+  stroke: var(--color-border);
+}
+
+.ringFill {
+  stroke: var(--color-accent);
+  stroke-dasharray: 100;
+}
+
+.ringLabel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Two columns ── */
+.twoCol {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-8);
+  row-gap: var(--space-12);
+}
+
+.focusCol {
+  grid-column: 1 / span 7;
+}
+
+.activityCol {
+  grid-column: 8 / span 5;
 }
 
 .sectionTitle {
-  grid-column: 1 / span 4;
-  margin: 0;
-  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  margin: 0 0 var(--space-6);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-text);
+  font-size: 1.5rem;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
   letter-spacing: -0.02em;
-  text-align: left;
 }
 
-/* ── Benefits ── */
-.benefitsGrid {
-  grid-column: 5 / span 8;
+/* focus cards: boxed, with a cursor spotlight (position comes from Tilt) */
+.focusList {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-10) var(--space-6);
+  gap: var(--space-5);
 }
 
-.benefitsGrid .benefitCard {
+.focusList .focusCard {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   height: 100%;
-  padding: var(--space-6);
+  padding: var(--space-5);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   transform-style: preserve-3d;
   transition: border-color 0.18s ease;
 }
 
-.benefitsGrid .benefitCard:hover {
+.focusList .focusCard:hover {
   border-color: var(--color-text);
 }
 
-.benefitTitle {
-  margin: 0;
+.focusList .focusCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    16rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--color-accent) 16%, transparent),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.focusList .focusCard:hover::before {
+  opacity: 1;
+}
+
+.focusHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  transform: translateZ(22px);
+}
+
+.focusLabel {
   font-size: var(--font-size-lg);
   font-weight: 700;
   letter-spacing: -0.01em;
-  transform: translateZ(28px);
 }
 
-.benefitBody {
-  margin: 0;
-  max-width: 28rem;
-  font-size: var(--font-size-sm);
-  line-height: 1.65;
-  color: var(--color-text-muted);
-  transform: translateZ(12px);
-}
-
-/* ── How it works ── */
-.steps {
-  grid-column: 5 / span 8;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--color-text);
-}
-
-.step {
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 2fr);
-  column-gap: var(--space-6);
-  align-items: baseline;
-  padding: var(--space-5) 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.stepNum {
-  font-size: var(--font-size-lg);
+.focusPct {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--color-accent-dark);
+  color: var(--color-accent-dark, var(--color-accent));
 }
 
-.stepTitle {
+.focusDesc {
   margin: 0;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  transform: translateZ(10px);
+}
+
+/* ── Recent activity ── */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.activityList > :first-child,
+.activityList > * {
+  width: 100%;
+}
+
+.activityList > button {
+  width: auto;
+}
+
+.activityList .activityCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.activityList .activityCard:hover {
+  border-color: var(--color-text);
+  transform: translateX(4px);
+}
+
+.activityTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+.activityDate {
+  color: var(--color-text-muted);
+}
+
+.activityStatus {
+  padding: 0.1rem 0.6rem;
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.activityPrompt {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.activityMeta {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Closing card ── */
+.startCard {
+  padding: var(--space-8);
+}
+
+.startInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.startTitle {
+  margin: 0 0 var(--space-2);
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.stepBody {
-  margin: 0;
+.startSub {
   max-width: 30rem;
-  line-height: 1.6;
-  color: var(--color-text-muted);
-}
-
-/* ── CTA ── */
-.ctaText {
-  grid-column: 1 / span 8;
-}
-
-.ctaTitle {
-  margin: 0 0 var(--space-3);
-  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-}
-
-.ctaBody {
   margin: 0;
-  font-size: var(--font-size-lg);
   line-height: 1.6;
   color: var(--color-text-muted);
-}
-
-.ctaAction {
-  grid-column: 9 / span 4;
-  align-self: end;
-  justify-self: end;
 }
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
-  .hero {
-    padding-bottom: var(--space-16);
-  }
-
-  .meta {
-    margin-bottom: var(--space-10);
-  }
-
-  .heroText,
-  .sectionTitle,
-  .benefitsGrid,
-  .steps,
-  .ctaText,
-  .ctaAction {
+  .welcomeText,
+  .welcomeAction,
+  .focusCol,
+  .activityCol {
     grid-column: 1 / -1;
   }
 
-  .heroPreview {
-    grid-column: 1 / -1;
-    margin-top: var(--space-10);
-  }
-
-  .sectionTitle {
-    margin-bottom: var(--space-8);
-  }
-
-  .ctaAction {
+  .welcomeAction {
     justify-self: start;
     margin-top: var(--space-6);
   }
+
+  .goalCard {
+    grid-template-columns: 1fr;
+    padding: var(--space-6);
+  }
+
+  .startCard {
+    padding: var(--space-6);
+  }
 }
 
-@media (max-width: 640px) {
-  .benefitsGrid {
+@media (max-width: 560px) {
+  .focusList {
     grid-template-columns: 1fr;
-  }
-
-  .step {
-    grid-template-columns: 2rem minmax(0, 1fr);
-    row-gap: var(--space-1);
-  }
-
-  .stepBody {
-    grid-column: 2;
   }
 }

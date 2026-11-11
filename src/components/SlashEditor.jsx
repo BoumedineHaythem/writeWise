@@ -134,7 +134,7 @@ function StaticBlocks({ blocks }) {
    Editable editor
    ───────────────────────────────────────────────────────────── */
 
-function EditableEditor({ id, label, value: blocks, onChange, placeholder, error, showHint }) {
+function EditableEditor({ id, label, value: blocks, onChange, placeholder, error, showHint, minHeight, fontSize }) {
   const [menu, setMenu] = useState(null); // { blockId, slashStart, query, index }
   const inputs = useRef(new Map());
   const pendingFocus = useRef(null);
@@ -366,6 +366,7 @@ function EditableEditor({ id, label, value: blocks, onChange, placeholder, error
         role="group"
         aria-labelledby={label ? labelId : undefined}
         className={[styles.surface, error ? styles.surfaceError : ''].join(' ')}
+        style={{ '--editor-min-height': minHeight, '--editor-font-size': fontSize }}
         onClick={handleSurfaceClick}
       >
         {blocks.map((block, index) => {
@@ -463,6 +464,8 @@ function EditableEditor({ id, label, value: blocks, onChange, placeholder, error
  *  - error        error message string
  *  - readOnly     render the formatted content without editing
  *  - showHint     show the "Type / for…" hint (default true)
+ *  - minHeight    CSS height of the writing surface, e.g. "60vh" (default 18rem)
+ *  - fontSize     CSS size of body text, e.g. "1.25rem" (default 1rem)
  */
 export default function SlashEditor({
   id = 'slash-editor',
@@ -473,6 +476,8 @@ export default function SlashEditor({
   error = '',
   readOnly = false,
   showHint = true,
+  minHeight,
+  fontSize,
 }) {
   if (readOnly) return <StaticBlocks blocks={value} />;
   return (
@@ -484,6 +489,8 @@ export default function SlashEditor({
       placeholder={placeholder}
       error={error}
       showHint={showHint}
+      minHeight={minHeight}
+      fontSize={fontSize}
     />
   );
 }
