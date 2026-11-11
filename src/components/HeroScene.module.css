@@ -1,0 +1,125 @@
+.scene {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: clamp(22rem, 38vw, 30rem);
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+  --sheets: 5;
+}
+
+/* Gentle idle drift, composed with the pointer-driven tilt on .stage */
+.float {
+  transform-style: preserve-3d;
+  animation: drift 7s ease-in-out infinite;
+}
+
+.stage {
+  position: relative;
+  width: clamp(12rem, 15vw, 15rem);
+  aspect-ratio: 3 / 4;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, -12deg)) rotateY(var(--ry, -26deg));
+  /* distance between pages grows as the visitor scrolls (--spread: 0 to 1) */
+  --gap: calc(24px + var(--spread, 0) * 36px);
+  will-change: transform;
+}
+
+/* ── Pages ── */
+.sheet {
+  position: absolute;
+  inset: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  opacity: calc(0.3 + var(--i) * 0.175);
+  transform: translateZ(calc(var(--i) * var(--gap)));
+}
+
+.sheetTop {
+  border-color: var(--color-text);
+  padding: var(--space-5);
+  overflow: hidden;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+.pageText {
+  margin: 0 0 var(--space-3);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.flag {
+  color: var(--color-text);
+  text-decoration: underline wavy var(--color-error, #d1495b);
+  text-underline-offset: 3px;
+}
+
+.bar {
+  display: block;
+  height: 6px;
+  background: var(--color-border);
+}
+
+/* ── Floating correction chip ── */
+.chip {
+  position: absolute;
+  top: 34%;
+  right: -16%;
+  padding: 0.45rem 0.75rem;
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-accent);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  color: var(--color-text);
+  transform: translateZ(calc((var(--sheets) - 1) * var(--gap) + 52px));
+}
+
+.chip s {
+  color: var(--color-text-muted);
+}
+
+/* ── Floor shadow ── */
+.shadow {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  width: 55%;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-text);
+  opacity: 0.14;
+  filter: blur(14px);
+  transform: translateX(-50%);
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotateZ(1.2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+}

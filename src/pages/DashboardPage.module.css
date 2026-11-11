@@ -1,0 +1,253 @@
+/* Swiss / minimal landing page
+   - one 12-column grid, content aligned flush left
+   - hierarchy comes from scale and weight, not boxes or shadows
+   - hairline rules for structure, one accent colour
+   Uses your existing design tokens. */
+
+.page {
+  overflow-x: hidden;
+  font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans', Arial, sans-serif;
+  color: var(--color-text);
+}
+
+/* ── Shared grid ── */
+.heroGrid,
+.sectionGrid,
+.ctaGrid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-6);
+}
+
+/* ── Hero ── */
+.hero {
+  padding: var(--space-8) 0 var(--space-20);
+  background: var(--color-bg);
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-16);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-text);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.heroText {
+  grid-column: 1 / span 8;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.5rem, 1.6rem + 4vw, 4.75rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--color-text);
+}
+
+.subtitle {
+  max-width: 34rem;
+  margin: var(--space-4) 0 0;
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.heroCta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.heroNote {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* 3D scene column */
+.heroPreview {
+  grid-column: 9 / span 4;
+  align-self: center;
+}
+
+/* ── Section scaffolding ── */
+.benefits,
+.howItWorks,
+.cta {
+  padding: var(--space-16) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.sectionTitle {
+  grid-column: 1 / span 4;
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+
+/* ── Benefits ── */
+.benefitsGrid {
+  grid-column: 5 / span 8;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-10) var(--space-6);
+}
+
+.benefitsGrid .benefitCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transform-style: preserve-3d;
+  transition: border-color 0.18s ease;
+}
+
+.benefitsGrid .benefitCard:hover {
+  border-color: var(--color-text);
+}
+
+.benefitTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transform: translateZ(28px);
+}
+
+.benefitBody {
+  margin: 0;
+  max-width: 28rem;
+  font-size: var(--font-size-sm);
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  transform: translateZ(12px);
+}
+
+/* ── How it works ── */
+.steps {
+  grid-column: 5 / span 8;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-text);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 2fr);
+  column-gap: var(--space-6);
+  align-items: baseline;
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stepNum {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-dark);
+}
+
+.stepTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.stepBody {
+  margin: 0;
+  max-width: 30rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+/* ── CTA ── */
+.ctaText {
+  grid-column: 1 / span 8;
+}
+
+.ctaTitle {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.ctaBody {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.ctaAction {
+  grid-column: 9 / span 4;
+  align-self: end;
+  justify-self: end;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .hero {
+    padding-bottom: var(--space-16);
+  }
+
+  .meta {
+    margin-bottom: var(--space-10);
+  }
+
+  .heroText,
+  .sectionTitle,
+  .benefitsGrid,
+  .steps,
+  .ctaText,
+  .ctaAction {
+    grid-column: 1 / -1;
+  }
+
+  .heroPreview {
+    grid-column: 1 / -1;
+    margin-top: var(--space-10);
+  }
+
+  .sectionTitle {
+    margin-bottom: var(--space-8);
+  }
+
+  .ctaAction {
+    justify-self: start;
+    margin-top: var(--space-6);
+  }
+}
+
+@media (max-width: 640px) {
+  .benefitsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .step {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    row-gap: var(--space-1);
+  }
+
+  .stepBody {
+    grid-column: 2;
+  }
+}

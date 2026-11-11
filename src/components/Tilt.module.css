@@ -1,0 +1,36 @@
+/* Outer wrapper: stays still, owns the perspective and is used for measuring. */
+.outer {
+  height: 100%;
+}
+
+/* Inner: GSAP rotates and scales this. */
+.tilt {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Optional soft highlight that follows the cursor */
+.glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    18rem circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.4),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.outer:hover .glare {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glare {
+    display: none;
+  }
+}

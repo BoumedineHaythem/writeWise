@@ -1,0 +1,243 @@
+.page {
+  padding: var(--space-10) 0 var(--space-16);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.pageTitle {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-2);
+}
+
+.pageSub {
+  color: var(--color-text-muted);
+}
+
+.prototypeNote {
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-3);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  max-width: 72ch;
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editorCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Prompt card */
+.promptCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.promptLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent-dark);
+}
+
+.promptText {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.changePrompt {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 0;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.changePrompt:hover {
+  color: var(--color-accent-dark);
+}
+
+/* Editor form */
+.editorForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.editorFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.wordCount {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.wordCountOk {
+  color: var(--color-success);
+}
+
+.wordCountHint {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* Submitted view */
+.submittedText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.submittedLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.textDisplay {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  font-size: var(--font-size-base);
+  line-height: 1.8;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 200px;
+}
+
+/* Feedback panel */
+.feedbackCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  outline: none; /* receives programmatic focus for scroll — no visible ring needed */
+}
+
+.disclaimerBanner {
+  background-color: #fff8e6;
+  border: 1px solid #f0c040;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: #7a5900;
+  line-height: 1.5;
+}
+
+.feedbackCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.feedbackTitle {
+  font-size: var(--font-size-xl);
+}
+
+.feedbackOverall {
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.observationList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.observation {
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.obsHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.obsText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.nextStep {
+  background-color: var(--color-accent-light);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.nextStepLabel {
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  color: var(--color-accent-dark);
+}
+
+.feedbackActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
