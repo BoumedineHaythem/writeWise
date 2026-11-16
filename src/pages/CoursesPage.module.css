@@ -1,0 +1,133 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+/* boxed cards with a cursor spotlight (position comes from Tilt) */
+.grid .card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transform-style: preserve-3d;
+  transition: border-color 0.18s ease;
+}
+
+.grid .card:hover {
+  border-color: var(--color-text);
+}
+
+.grid .card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    18rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--color-accent) 14%, transparent),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.grid .card:hover::before {
+  opacity: 1;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  transform: translateZ(14px);
+}
+
+.meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.courseTitle {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  transform: translateZ(26px);
+}
+
+.tagline {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  transform: translateZ(12px);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+  font-size: var(--font-size-sm);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.stepDot {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.stepDone {
+  color: var(--color-text);
+}
+
+.stepDone .stepDot {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+.progressText {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepDot {
+    transition: none;
+  }
+}

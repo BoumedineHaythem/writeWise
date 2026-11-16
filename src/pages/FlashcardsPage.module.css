@@ -1,0 +1,327 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.mode {
+  padding: 0.4rem 1rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.mode:hover {
+  border-color: var(--color-text);
+}
+
+.modeOn {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+}
+
+.mode:focus-visible,
+.flip:focus-visible,
+.again:focus-visible,
+.got:focus-visible,
+.chipWord:focus-visible,
+.chipRemove:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+/* ── Study area ── */
+.study {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.position {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.stage {
+  perspective: 1400px;
+}
+
+.flip {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 17rem;
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: var(--color-text);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-text);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.back {
+  background: var(--color-accent-light);
+  transform: rotateY(180deg);
+}
+
+.faceWord {
+  font-size: clamp(2.25rem, 1.5rem + 3.5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.facePos {
+  color: var(--color-text-muted);
+}
+
+.faceHint {
+  position: absolute;
+  bottom: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.faceDef {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.faceExample {
+  max-width: 28rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.rate {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.again,
+.got {
+  padding: 0.8rem 1rem;
+  background: none;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: 700;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.again:hover {
+  border-color: var(--color-text);
+}
+
+.got {
+  border-color: var(--color-accent);
+}
+
+.got:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.keys {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* ── Empty states ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  border: 1px solid var(--color-text);
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.emptyText {
+  max-width: 32rem;
+  margin: 0 0 var(--space-2);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* ── Deck list ── */
+.deck {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-text);
+}
+
+.deckHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.deckTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.chipKnown {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+}
+
+.chipWord,
+.chipRemove {
+  padding: 0.35rem 0.8rem;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.chipWord {
+  font-weight: 600;
+}
+
+.chipRemove {
+  padding-left: 0.4rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+
+.chipRemove:hover {
+  color: var(--color-error, #c0392b);
+}
+
+.toast {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: 50;
+  max-width: 22rem;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-text);
+  color: #fff;
+  font-size: var(--font-size-sm);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast:not(:empty) {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .empty {
+    padding: var(--space-5);
+  }
+
+  .faceDef {
+    font-size: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip,
+  .again,
+  .got,
+  .mode,
+  .toast {
+    transition: none;
+  }
+}

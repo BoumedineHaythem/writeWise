@@ -8,6 +8,11 @@ import DashboardPage from './pages/DashboardPage';
 import WritingWorkspacePage from './pages/WritingWorkspacePage';
 import ProgressPage from './pages/ProgressPage';
 import PracticePage from './pages/PracticePage';
+import CoursesPage from './pages/CoursesPage';
+import CoursePage from './pages/CoursePage';
+import ExplorePage from './pages/ExplorePage';
+import FlashcardsPage from './pages/FlashcardsPage';
+import { LearningProvider } from './context/LearningContext';
 
 
 /**
@@ -19,14 +24,17 @@ export default function App() {
   const [page, setPage] = useState('landing');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
+  const [courseId, setCourseId] = useState(null);
 
-  const navigate = (target) => {
+  // navigate('course', 'writing-emails') opens one course; other pages need no second argument
+  const navigate = (target, param) => {
     // Guard: redirect unauthenticated users away from protected pages
-    const protected_ = ['dashboard', 'workspace', 'practice', 'progress'];
+    const protected_ = ['dashboard', 'workspace', 'courses', 'course', 'explore', 'flashcards', 'practice', 'progress'];
     if (protected_.includes(target) && !isLoggedIn) {
       setPage('login');
       return;
     }
+    if (target === 'course') setCourseId(param || null);
     setPage(target);
     // Scroll to top on page change
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -62,19 +70,30 @@ export default function App() {
         return <ProgressPage onNavigate={navigate} />;
       case 'practice':
         return <PracticePage onNavigate={navigate} />;
+      case 'courses':
+        return <CoursesPage onNavigate={navigate} />;
+      case 'course':
+        // key makes a fresh page (and fresh milestone selection) for each course
+        return <CoursePage key={courseId} courseId={courseId} onNavigate={navigate} />;
+      case 'explore':
+        return <ExplorePage onNavigate={navigate} />;
+      case 'flashcards':
+        return <FlashcardsPage onNavigate={navigate} />;
       default:
         return <LandingPage onNavigate={navigate} />;
     }
   };
 
   return (
-    <AppShell
-      currentPage={page}
-      onNavigate={navigate}
-      isLoggedIn={isLoggedIn}
-      onLogout={handleLogout}
-    >
-      {renderPage()}
-    </AppShell>
+    <LearningProvider>
+      <AppShell
+        currentPage={page}
+        onNavigate={navigate}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+      >
+        {renderPage()}
+      </AppShell>
+    </LearningProvider>
   );
 }

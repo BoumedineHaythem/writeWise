@@ -1,0 +1,90 @@
+/* Shared building blocks for the Courses / Explore / Flashcards pages.
+   Same Swiss / minimal system as the rest of the app. Uses your design tokens. */
+
+.page {
+  padding: var(--space-8) 0 var(--space-16);
+  overflow-x: clip;
+  font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans', Arial, sans-serif;
+  color: var(--color-text);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-text);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.sub {
+  max-width: 36rem;
+  margin: var(--space-3) 0 0;
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.stat {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.stat strong {
+  font-size: 1.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.bar {
+  height: 4px;
+  background: var(--color-border);
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 0.5s ease;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barFill {
+    transition: none;
+  }
+}

@@ -1,0 +1,12 @@
+.wordMask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.06em 0 0.22em;
+  margin: -0.06em 0 -0.22em;
+}
+
+.word {
+  display: inline-block;
+  will-change: transform;
+}

@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import { useLearning } from '../context/LearningContext';
+import { maskWord } from '../data/learningData';
 import styles from './PracticePage.module.css';
 
 // Prototype data. In the real app these come from the mistakes found in the
 // person's own writing. You can move this list into ../data/mockData.
-const PRACTICE_WORDS = [
+const BASE_WORDS = [
   { id: 'w1', word: 'definitely', mistake: 'definately', meaning: 'without any doubt', sentence: 'I will ____ finish my draft today.' },
   { id: 'w2', word: 'receive', mistake: 'recieve', meaning: 'to get something that is sent or given', sentence: 'I hope to ____ your feedback soon.' },
   { id: 'w3', word: 'separate', mistake: 'seperate', meaning: 'apart, not joined together', sentence: 'Keep each idea in a ____ paragraph.' },
@@ -15,6 +17,19 @@ const PRACTICE_WORDS = [
 ];
 
 export default function PracticePage({ onNavigate }) {
+  // words saved from Explore join the built-in list
+  const { practiceWords } = useLearning();
+  const words = [
+    ...BASE_WORDS,
+    ...practiceWords.map((w) => ({
+      id: `saved-${w.id}`,
+      word: w.word.toLowerCase(),
+      mistake: null,
+      meaning: w.definition,
+      sentence: maskWord(w.example, w.word),
+    })),
+  ];
+
   const [mode, setMode] = useState('overview'); // 'overview' | 'practicing' | 'done'
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -23,8 +38,8 @@ export default function PracticePage({ onNavigate }) {
   const inputRef = useRef(null);
   const doneRef = useRef(null);
 
-  const total = PRACTICE_WORDS.length;
-  const current = PRACTICE_WORDS[index];
+  const total = words.length;
+  const current = words[Math.min(index, total - 1)];
 
   // Focus the answer box for each new word
   useEffect(() => {
@@ -78,17 +93,21 @@ export default function PracticePage({ onNavigate }) {
           {/* ── Overview: the words + start button ── */}
           {mode === 'overview' && (
             <>
-              <h2 className={styles.cardTitle}>Words you often write incorrectly</h2>
+              <h2 className={styles.cardTitle}>Words to practise</h2>
               <p className={styles.cardText}>
-                Practice these {total} words to improve your writing.
+                Practise these {total} words to improve your writing. Words you save in Explore appear here too.
               </p>
 
               <ul className={styles.wordList} aria-label="Words to practice">
-                {PRACTICE_WORDS.map((w) => (
+                {words.map((w) => (
                   <li key={w.id} className={styles.wordItem}>
                     <span className={styles.wordCorrect}>{w.word}</span>
                     <span className={styles.wordMistake}>
-                      You often write: <s>{w.mistake}</s>
+                      {w.mistake ? (
+                        <>You often write: <s>{w.mistake}</s></>
+                      ) : (
+                        <>Saved from Explore</>
+                      )}
                     </span>
                   </li>
                 ))}
