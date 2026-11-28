@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { api, getToken } from './api/client';
 import './styles/global.css';
 import AppShell from './components/AppShell';
 import LandingPage from './pages/LandingPage';
@@ -16,15 +17,31 @@ import { LearningProvider } from './context/LearningContext';
 
 
 /**
- * Writewise — Prototype frontend.
+ * Writewise frontend.
  * Uses a simple local-state page switcher instead of a router
- * to avoid adding extra dependencies.
+ * to avoid adding extra dependencies. Accounts and data live in the backend (server/).
  */
 export default function App() {
   const [page, setPage] = useState('landing');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [courseId, setCourseId] = useState(null);
+  // true while a saved login token is being checked, so we don't flash the logged-out view
+  const [restoring, setRestoring] = useState(() => Boolean(getToken()));
+
+  // Restore a saved login on page load
+  useEffect(() => {
+    if (!getToken()) return;
+    api
+      .me()
+      .then((user) => {
+        setUserName(user.name);
+        setIsLoggedIn(true);
+        setPage('dashboard');
+      })
+      .catch(() => {})
+      .finally(() => setRestoring(false));
+  }, []);
 
   // navigate('course', 'writing-emails') opens one course; other pages need no second argument
   const navigate = (target, param) => {
@@ -40,14 +57,15 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleAuthSuccess = (name) => {
-    setUserName(name);
+  const handleAuthSuccess = (user) => {
+    setUserName(user.name);
     setIsLoggedIn(true);
     setPage('dashboard');
     window.scrollTo({ top: 0 });
   };
 
   const handleLogout = () => {
+    api.logout().catch(() => {});
     setIsLoggedIn(false);
     setUserName('');
     setPage('landing');
@@ -57,7 +75,7 @@ export default function App() {
   const renderPage = () => {
     switch (page) {
       case 'landing':
-        return <LandingPage onNavigate={navigate} />;
+        return <LandingPage onNavigate={navigate} onAuthSuccess={handleAuthSuccess} />;
       case 'signup':
         return <SignUpPage onNavigate={navigate} onAuthSuccess={handleAuthSuccess} />;
       case 'login':
@@ -80,19 +98,19 @@ export default function App() {
       case 'flashcards':
         return <FlashcardsPage onNavigate={navigate} />;
       default:
-        return <LandingPage onNavigate={navigate} />;
+        return <LandingPage onNavigate={navigate} onAuthSuccess={handleAuthSuccess} />;
     }
   };
 
   return (
-    <LearningProvider>
+    <LearningProvider isLoggedIn={isLoggedIn}>
       <AppShell
         currentPage={page}
         onNavigate={navigate}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
       >
-        {renderPage()}
+        {restoring ? null : renderPage()}
       </AppShell>
     </LearningProvider>
   );

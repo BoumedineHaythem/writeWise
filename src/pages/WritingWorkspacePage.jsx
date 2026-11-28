@@ -6,7 +6,8 @@ import SlashEditor, {
   createInitialBlocks,
   blocksToPlainText,
 } from '../components/SlashEditor';
-import { mockWritingPrompts, mockSampleFeedback } from '../data/mockData';
+import { mockWritingPrompts } from '../data/mockData';
+import { api } from '../api/client';
 import styles from './WritingWorkspacePage.module.css';
 
 const MOTION_OK = '(prefers-reduced-motion: no-preference)';
@@ -34,6 +35,9 @@ export default function WritingWorkspacePage({ onNavigate }) {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [focusMode, setFocusMode] = useState(false);
+  const [prompts, setPrompts] = useState(mockWritingPrompts);
+  const [feedback, setFeedback] = useState(null);
+  const [pending, setPending] = useState(false);
 
   const root = useRef(null);
   const feedbackRef = useRef(null);
@@ -42,12 +46,17 @@ export default function WritingWorkspacePage({ onNavigate }) {
   const firstPrompt = useRef(true);
   const wasUnlocked = useRef(false);
 
-  const prompt = mockWritingPrompts[promptIndex];
+  const prompt = prompts[promptIndex % prompts.length];
   const text = blocksToPlainText(blocks);
   const wordCount = countWords(text);
   const unlocked = wordCount >= MIN_WORDS;
   const progress = Math.min(100, Math.round((wordCount / MIN_WORDS) * 100));
   const focusing = focusMode && !submitted;
+
+  /* ── prompts come from the server (the built-in list is the fallback) ── */
+  useEffect(() => {
+    api.prompts().then((list) => list.length && setPrompts(list)).catch(() => {});
+  }, []);
 
   /* ── page intro ── */
   useLayoutEffect(() => {
@@ -118,23 +127,34 @@ export default function WritingWorkspacePage({ onNavigate }) {
     }
   }, [submitted]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (pending) return;
     if (wordCount < MIN_WORDS) {
       setError(`Please write at least ${MIN_WORDS} words before reviewing. You have ${wordCount} so far.`);
       return;
     }
     setError('');
-    setFocusMode(false);
-    setSubmitted(true);
+    setPending(true);
+    try {
+      const session = await api.submitWriting(prompt, text, blocks);
+      setFeedback(session.feedback);
+      setFocusMode(false);
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPending(false);
+    }
   };
 
   const handleNewSession = () => {
     setBlocks(createInitialBlocks());
     setSubmitted(false);
+    setFeedback(null);
     setError('');
     setFocusMode(false);
-    setPromptIndex((i) => (i + 1) % mockWritingPrompts.length);
+    setPromptIndex((i) => (i + 1) % prompts.length);
   };
 
   const handleEditorChange = (next) => {
@@ -156,7 +176,7 @@ export default function WritingWorkspacePage({ onNavigate }) {
               Take your time. Write freely, there&apos;s no perfect first draft.
             </p>
             <p className={styles.prototypeNote} data-anim="fade">
-              Write at least {MIN_WORDS} words to continue. Review shows preset sample feedback and does not analyze your writing.
+              Write at least {MIN_WORDS} words, then review to get feedback on your writing.
             </p>
           </div>
           {submitted && (
@@ -177,7 +197,7 @@ export default function WritingWorkspacePage({ onNavigate }) {
                 <button
                   type="button"
                   className={styles.changePrompt}
-                  onClick={() => setPromptIndex((i) => (i + 1) % mockWritingPrompts.length)}
+                  onClick={() => setPromptIndex((i) => (i + 1) % prompts.length)}
                   aria-label="Try a different writing prompt"
                 >
                   Try a different prompt
@@ -249,11 +269,11 @@ export default function WritingWorkspacePage({ onNavigate }) {
                   <span className={styles.reviewWrap} ref={reviewRef}>
                     <Button
                       type="submit"
-                      disabled={!unlocked}
+                      disabled={!unlocked || pending}
                       size="lg"
                       aria-describedby={!unlocked ? 'word-count-status' : undefined}
                     >
-                      Review my writing
+                      {pending ? 'Reviewing…' : 'Review my writing'}
                     </Button>
                   </span>
                 </div>
@@ -272,7 +292,7 @@ export default function WritingWorkspacePage({ onNavigate }) {
           </div>
 
           {/* ── Feedback panel ── */}
-          {submitted && (
+          {submitted && feedback && (
             <aside
               className={styles.feedbackCol}
               aria-labelledby="feedback-heading"
@@ -280,24 +300,24 @@ export default function WritingWorkspacePage({ onNavigate }) {
               tabIndex={-1}
               data-anim="feedback"
             >
-              {/* Prototype disclaimer */}
               <div className={styles.disclaimerBanner} role="note">
-                <strong>Sample feedback only.</strong>
-                <span> {mockSampleFeedback.disclaimer.replace('⚠️ ', '')}</span>
+                <strong>{feedback.source === 'claude' ? 'AI feedback.' : 'Automatic feedback.'}</strong>
+                <span> These notes are generated automatically and can miss things. Use them as hints, not rules.</span>
               </div>
 
               <Card className={styles.feedbackCard}>
                 <h2 id="feedback-heading" className={styles.feedbackTitle}>
                   Your feedback
                 </h2>
-                <p className={styles.feedbackOverall} data-anim="fb-item">{mockSampleFeedback.overallComment}</p>
+                <p className={styles.feedbackOverall} data-anim="fb-item">{feedback.overallComment}</p>
 
                 <ul className={styles.observationList} aria-label="Feedback observations">
-                  {mockSampleFeedback.observations.map((obs) => (
+                  {feedback.observations.map((obs) => (
                     <li key={obs.id} className={styles.observation} data-anim="fb-item">
                       <div className={styles.obsHeader}>
                         <span className={styles.obsDot} aria-hidden="true" />
                         <strong>{obs.category}</strong>
+                        {typeof obs.score === 'number' && <span> · {obs.score}/100</span>}
                       </div>
                       <p className={styles.obsText}>{obs.text}</p>
                     </li>
@@ -306,7 +326,7 @@ export default function WritingWorkspacePage({ onNavigate }) {
 
                 <div className={styles.nextStep} data-anim="fb-item">
                   <p className={styles.nextStepLabel}>Suggested next step</p>
-                  <p>{mockSampleFeedback.nextStep}</p>
+                  <p>{feedback.nextStep}</p>
                 </div>
 
                 <div className={styles.feedbackActions} data-anim="fb-item">

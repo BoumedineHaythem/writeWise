@@ -38,8 +38,8 @@ export default function AppShell({ currentPage, onNavigate, isLoggedIn, onLogout
         <div className="container">
           <p>
             <span aria-hidden="true">✍️ </span>
-            <strong>Writewise</strong> — a prototype English writing-learning platform.
-            All feedback and progress shown is sample data for demonstration purposes.
+            <strong>Writewise</strong> — an English writing-learning platform.
+            Feedback is generated automatically and is meant as guidance, not a grade.
           </p>
         </div>
       </footer>

@@ -5,7 +5,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import ProgressBar from '../components/ProgressBar';
 import Tilt from '../components/Tilt';
-import { mockUser, mockFocusAreas, mockRecentActivity } from '../data/mockData';
+import useProgress, { formatDate } from '../hooks/useProgress';
 import styles from './DashboardPage.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -24,8 +24,9 @@ function Words({ text }) {
 
 export default function DashboardPage({ onNavigate, userName }) {
   const root = useRef(null);
-  const name = userName || mockUser.name;
-  const { weeklyGoal, sessionsThisWeek } = mockUser;
+  const name = userName || 'there';
+  const { data, loading } = useProgress(3);
+  const { weeklyGoal, sessionsThisWeek, focusAreas, sessions } = data;
   const goalPercent = Math.round((sessionsThisWeek / weeklyGoal) * 100);
   const ringPercent = Math.min(100, goalPercent);
 
@@ -129,7 +130,7 @@ export default function DashboardPage({ onNavigate, userName }) {
 
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
     return () => mm.revert();
-  }, [goalPercent, ringPercent]);
+  }, [goalPercent, ringPercent, loading]);
 
   return (
     <div className={styles.page} ref={root}>
@@ -196,7 +197,7 @@ export default function DashboardPage({ onNavigate, userName }) {
           <section className={styles.focusCol} aria-labelledby="focus-heading">
             <h2 id="focus-heading" className={styles.sectionTitle}>Your focus areas</h2>
             <div className={styles.focusList}>
-              {mockFocusAreas.map((area) => (
+              {focusAreas.map((area) => (
                 <Tilt key={area.id} max={6}>
                   <Card variant="flat" className={styles.focusCard} data-anim="focus">
                     <div className={styles.focusHeader}>
@@ -215,17 +216,23 @@ export default function DashboardPage({ onNavigate, userName }) {
           <section className={styles.activityCol} aria-labelledby="activity-heading">
             <h2 id="activity-heading" className={styles.sectionTitle}>Recent activity</h2>
             <div className={styles.activityList}>
-              {mockRecentActivity.map((item) => (
+              {!loading && sessions.length === 0 && (
+                <Card className={styles.activityCard}>
+                  <p className={styles.activityPrompt}>No writing yet. Your sessions will appear here.</p>
+                  <Button size="sm" onClick={() => onNavigate('workspace')}>Start your first session</Button>
+                </Card>
+              )}
+              {sessions.map((item) => (
                 <Card key={item.id} className={styles.activityCard} data-anim="activity">
                   <div className={styles.activityTop}>
-                    <span className={styles.activityDate}>{item.date}</span>
-                    <span className={styles.activityStatus}>{item.status}</span>
+                    <span className={styles.activityDate}>{formatDate(item.createdAt)}</span>
+                    <span className={styles.activityStatus}>Reviewed</span>
                   </div>
                   <p className={styles.activityPrompt}>&ldquo;{item.prompt}&rdquo;</p>
                   <div className={styles.activityMeta}>
                     <span>{item.wordCount} words</span>
                     <span aria-hidden="true">·</span>
-                    <span>{item.focusArea}</span>
+                    <span>{item.focusLabel}</span>
                   </div>
                 </Card>
               ))}

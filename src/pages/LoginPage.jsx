@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import Button from '../components/Button';
 import HeroScene from '../components/HeroScene';
+import { api } from '../api/client';
 import styles from './LoginPage.module.css';
 
 const MOTION_OK = '(prefers-reduced-motion: no-preference)';
@@ -94,18 +95,31 @@ export default function LoginPage({ onNavigate, onAuthSuccess }) {
     setErrors((current) => (current[key] ? { ...current, [key]: '' } : current));
   };
 
-  const handleSubmit = (e) => {
+  const [pending, setPending] = useState(false);
+
+  const fail = (errs) => {
+    setErrors(errs);
+    setShake((t) => t + 1);
+    (Object.keys(errs)[0] === 'email' ? emailRef : passwordRef).current?.focus();
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (pending) return;
     const errs = validate(fields);
     setErrors(errs);
-    const keys = Object.keys(errs);
-    if (keys.length > 0) {
-      setShake((t) => t + 1);
-      (keys[0] === 'email' ? emailRef : passwordRef).current?.focus();
-      return;
+    if (Object.keys(errs).length > 0) return fail(errs);
+    setPending(true);
+    try {
+      const user = await api.login(fields.email, fields.password);
+      setSubmitted(true);
+      timer.current = window.setTimeout(() => onAuthSuccess(user), 1800);
+    } catch (err) {
+      // wrong credentials or server down: show the message under the password field
+      fail({ ...err.fields, ...(err.fields?.email ? {} : { password: err.message }) });
+    } finally {
+      setPending(false);
     }
-    setSubmitted(true);
-    timer.current = window.setTimeout(() => onAuthSuccess('Alex'), 1800);
   };
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -277,10 +291,7 @@ export default function LoginPage({ onNavigate, onAuthSuccess }) {
                 <circle cx="26" cy="26" r="23" pathLength="100" className={styles.checkCircle} data-anim="check-circle" />
                 <path d="M15 27 l8 8 l15 -17" pathLength="100" className={styles.checkPath} data-anim="check-path" />
               </svg>
-              <p className={styles.prototypeNoteCenter} data-anim="success-text">
-                Prototype only: no credentials were checked and no session was saved.
-              </p>
-              <h2 className={styles.successTitle} data-anim="success-text">Demo sign-in complete</h2>
+              <h2 className={styles.successTitle} data-anim="success-text">You&apos;re signed in</h2>
               <p className={styles.successSub} data-anim="success-text">Taking you to your dashboard…</p>
               <div className={styles.loadBar} aria-hidden="true">
                 <span className={styles.loadFill} data-anim="load" />
@@ -290,9 +301,6 @@ export default function LoginPage({ onNavigate, onAuthSuccess }) {
             <>
               <h1 className={styles.title} data-anim="fade">Log in to Writewise</h1>
               <p className={styles.sub} data-anim="fade">Good to see you again.</p>
-              <p className={styles.note} data-anim="fade">
-                This demo accepts any valid-format email and a password. Nothing is verified or saved.
-              </p>
 
               <form onSubmit={handleSubmit} noValidate className={styles.form} ref={formRef}>
                 <Field
@@ -331,8 +339,8 @@ export default function LoginPage({ onNavigate, onAuthSuccess }) {
                   }
                 />
                 <span className={styles.submitWrap} data-magnet data-anim="button">
-                  <Button type="submit" fullWidth size="lg">
-                    Log in
+                  <Button type="submit" fullWidth size="lg" disabled={pending}>
+                    {pending ? 'Logging in…' : 'Log in'}
                   </Button>
                 </span>
               </form>

@@ -4,4 +4,8 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // the backend (npm run server) listens on 3001
+    proxy: { '/api': 'http://localhost:3001' },
+  },
 })

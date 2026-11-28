@@ -2,18 +2,14 @@ import React from 'react';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import ProgressBar from '../components/ProgressBar';
-import {
-  mockProgressSessions,
-  mockTotalStats,
-  mockFocusAreas,
-  mockCompletedSessions,
-} from '../data/mockData';
+import useProgress, { formatDate } from '../hooks/useProgress';
 import styles from './ProgressPage.module.css';
 
 export default function ProgressPage({ onNavigate }) {
-  const { totalSessions, totalWords, currentStreak, longestStreak } = mockTotalStats;
-  // Pre-compute max words once — used to scale the activity bars
-  const maxWeeklyWords = Math.max(...mockProgressSessions.map((r) => r.words));
+  const { data, loading, error } = useProgress(50);
+  const { totalSessions, totalWords, currentStreak, longestStreak } = data.totals;
+  // Pre-compute max words once — used to scale the activity bars (at least 1 to avoid dividing by 0)
+  const maxWeeklyWords = Math.max(1, ...data.weekly.map((r) => r.words));
 
   return (
     <div className={styles.page}>
@@ -32,12 +28,18 @@ export default function ProgressPage({ onNavigate }) {
           </Button>
         </div>
 
-        {/* Sample data notice */}
-        <div className={styles.sampleNotice} role="note">
-          <span aria-hidden="true">📊 </span>
-          <strong>Sample data: </strong>
-          This progress view shows example data to illustrate how your real progress will appear. Weekly bars compare words written; focus percentages and streak counts are illustrative only.
-        </div>
+        {error && (
+          <div className={styles.sampleNotice} role="alert">
+            <strong>Couldn&apos;t load your progress: </strong>
+            {error}
+          </div>
+        )}
+        {!loading && !error && totalSessions === 0 && (
+          <div className={styles.sampleNotice} role="note">
+            <span aria-hidden="true">📊 </span>
+            Finish your first writing session and your progress will start to appear here.
+          </div>
+        )}
 
         {/* ── Stat tiles ── */}
         <section aria-labelledby="stats-heading">
@@ -46,8 +48,8 @@ export default function ProgressPage({ onNavigate }) {
             {[
               { value: totalSessions, label: 'Total sessions', icon: '📝' },
               { value: totalWords.toLocaleString(), label: 'Words written', icon: '✍️' },
-              { value: `${currentStreak} days`, label: 'Current streak', icon: '🔥' },
-              { value: `${longestStreak} days`, label: 'Longest streak', icon: '🏆' },
+              { value: `${currentStreak} ${currentStreak === 1 ? 'day' : 'days'}`, label: 'Current streak', icon: '🔥' },
+              { value: `${longestStreak} ${longestStreak === 1 ? 'day' : 'days'}`, label: 'Longest streak', icon: '🏆' },
             ].map((stat) => (
               <Card key={stat.label} variant="flat" className={styles.statTile}>
                 <span className={styles.statIcon} aria-hidden="true">{stat.icon}</span>
@@ -81,11 +83,11 @@ export default function ProgressPage({ onNavigate }) {
                 </tr>
               </thead>
               <tbody>
-                {mockProgressSessions.map((row) => {
+                {data.weekly.map((row) => {
                   const barWidth = Math.round((row.words / maxWeeklyWords) * 100);
                   return (
-                    <tr key={row.week}>
-                      <td className={styles.weekCell}>{row.week}</td>
+                    <tr key={row.weekStart}>
+                      <td className={styles.weekCell}>{row.label}</td>
                       <td className={styles.numCell}>{row.sessions}</td>
                       <td className={styles.numCell}>{row.words}</td>
                       <td className={styles.barCell}>
@@ -114,7 +116,7 @@ export default function ProgressPage({ onNavigate }) {
             Focus area progress
           </h2>
           <div className={styles.focusGrid}>
-            {mockFocusAreas.map((area) => (
+            {data.focusAreas.map((area) => (
               <Card key={area.id} className={styles.focusCard}>
                 <div className={styles.focusHeader}>
                   <span className={styles.focusIcon} aria-hidden="true">{area.icon}</span>
@@ -147,12 +149,17 @@ export default function ProgressPage({ onNavigate }) {
           </h2>
           <Card className={styles.sessionsCard}>
             <ul className={styles.sessionList} aria-label="Completed practice sessions">
-              {mockCompletedSessions.map((s, i) => (
-                <li key={i} className={styles.sessionItem}>
+              {data.sessions.length === 0 && (
+                <li className={styles.sessionItem}>
+                  <p className={styles.sessionPrompt}>No completed sessions yet.</p>
+                </li>
+              )}
+              {data.sessions.map((s) => (
+                <li key={s.id} className={styles.sessionItem}>
                   <div className={styles.sessionMeta}>
-                    <span className={styles.sessionDate}>{s.date}</span>
-                    <span className={styles.sessionWords}>{s.words} words</span>
-                    <span className={styles.sessionFocus}>{s.focus}</span>
+                    <span className={styles.sessionDate}>{formatDate(s.createdAt)}</span>
+                    <span className={styles.sessionWords}>{s.wordCount} words</span>
+                    <span className={styles.sessionFocus}>{s.focusLabel}</span>
                   </div>
                   <p className={styles.sessionPrompt}>&ldquo;{s.prompt}&rdquo;</p>
                 </li>

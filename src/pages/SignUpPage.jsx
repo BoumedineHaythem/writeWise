@@ -1,7 +1,8 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import Button from '../components/Button';
 import FormField from '../components/FormField';
 import Card from '../components/Card';
+import { api } from '../api/client';
 import styles from './AuthPage.module.css';
 
 function validate(fields, isSignUp) {
@@ -26,19 +27,31 @@ export default function SignUpPage({ onNavigate, onAuthSuccess }) {
   const [fields, setFields] = useState({ name: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [formError, setFormError] = useState('');
 
   const set = (key) => (e) => {
     setFields((f) => ({ ...f, [key]: e.target.value }));
     setErrors((current) => current[key] ? { ...current, [key]: '' } : current);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (pending) return;
     const errs = validate(fields, true);
     setErrors(errs);
-    if (Object.keys(errs).length === 0) {
+    setFormError('');
+    if (Object.keys(errs).length > 0) return;
+    setPending(true);
+    try {
+      const user = await api.signup(fields.name.trim(), fields.email.trim(), fields.password);
       setSubmitted(true);
-      setTimeout(() => onAuthSuccess(fields.name || 'there'), 1400);
+      setTimeout(() => onAuthSuccess(user), 1400);
+    } catch (err) {
+      if (Object.keys(err.fields).length) setErrors(err.fields);
+      else setFormError(err.message);
+    } finally {
+      setPending(false);
     }
   };
 
@@ -46,10 +59,9 @@ export default function SignUpPage({ onNavigate, onAuthSuccess }) {
     return (
       <div className={styles.centeredPage}>
         <Card className={styles.successCard} role="status" aria-live="polite">
-          <p className={styles.prototypeNote}>Prototype only: no account was created and your details were not saved.</p>
           <span className={styles.successIcon} aria-hidden="true">🎉</span>
-          <h2>Your demo is ready</h2>
-          <p>Your demo is ready. Taking you to your dashboard…</p>
+          <h2>Your account is ready</h2>
+          <p>Welcome to Writewise! Taking you to your dashboard…</p>
           <div className={styles.spinner} aria-hidden="true" />
         </Card>
       </div>
@@ -60,11 +72,8 @@ export default function SignUpPage({ onNavigate, onAuthSuccess }) {
     <div className={styles.centeredPage}>
       <Card className={styles.authCard}>
         <div className={styles.authHeader}>
-          <h1 className={styles.authTitle}>Start your Writewise demo</h1>
+          <h1 className={styles.authTitle}>Create your Writewise account</h1>
           <p className={styles.authSub}>Start your writing journey today.</p>
-          <p className={styles.prototypeNote}>
-            This is a local demo. It checks the form, but doesn&apos;t create an account or save your details.
-          </p>
         </div>
 
         <form onSubmit={handleSubmit} noValidate className={styles.form}>
@@ -102,8 +111,13 @@ export default function SignUpPage({ onNavigate, onAuthSuccess }) {
             autoComplete="new-password"
             hint="Minimum 8 characters."
           />
-          <Button type="submit" fullWidth size="lg">
-            Continue to demo
+          {formError && (
+            <p className={styles.prototypeNote} role="alert">
+              {formError}
+            </p>
+          )}
+          <Button type="submit" fullWidth size="lg" disabled={pending}>
+            {pending ? 'Creating account…' : 'Create account'}
           </Button>
         </form>
 
